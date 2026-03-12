@@ -1,0 +1,39 @@
+image:
+  repository: edoburu/pgbouncer
+  tag: v1.24.1-p1
+
+initImage:
+  repository: alpine
+  tag: "3.21"
+
+replicaCount: 1
+
+databases: {}
+#  mydb:
+#    host: postgres.svc.cluster.local
+#    port: 5432
+#    dbname: mydb
+
+pgbouncer:
+  poolMode: transaction
+  defaultPoolSize: 5
+  maxClientConn: 100
+  authType: md5
+
+tls:
+  client:
+    enabled: false
+    sslmode: allow
+    existingSecret: ""  # bring your own: Secret with tls.crt + tls.key
+  server:
+    sslmode: prefer
+
+envFrom: []  # must include DB_USER and DB_PASSWORD
+
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits: { cpu: 500m, memory: 256Mi }
+
+service:
+  type: ClusterIP
+  port: 6432

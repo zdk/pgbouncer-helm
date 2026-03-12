@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pgbouncer.fullname" . }}
+  labels:
+    {{- include "pgbouncer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "pgbouncer.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "pgbouncer.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 120 }}
+      initContainers:
+      - name: render-config
+        image: {{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}
+        command: ["sh", "-c"]
+        args:
+        - |
+          {{- if and .Values.tls.client.enabled (not .Values.tls.client.existingSecret) }}
+          apk add --no-cache gettext openssl >/dev/null 2>&1
+          openssl req -x509 -newkey rsa:2048 -keyout /config/tls.key -out /config/tls.crt \
+            -days 365 -nodes -subj '/CN={{ include "pgbouncer.fullname" . }}' 2>/dev/null
+          chmod 644 /config/tls.key /config/tls.crt
+          {{- else }}
+          apk add --no-cache gettext >/dev/null 2>&1
+          {{- end }}
+          envsubst < /tpl/pgbouncer.ini.tpl > /config/pgbouncer.ini
+          envsubst < /tpl/userlist.txt.tpl > /config/userlist.txt
+        {{- with .Values.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - { name: config-template, mountPath: /tpl }
+        - { name: config-rendered, mountPath: /config }
+      containers:
+      - name: pgbouncer
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        ports:
+        - containerPort: 6432
+        readinessProbe:
+          tcpSocket:
+            port: 6432
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - { name: config-rendered, mountPath: /etc/pgbouncer/pgbouncer.ini, subPath: pgbouncer.ini }
+        - { name: config-rendered, mountPath: /etc/pgbouncer/userlist.txt, subPath: userlist.txt }
+        {{- if .Values.tls.client.enabled }}
+        - { name: {{ include "pgbouncer.tlsVolumeName" . }}, mountPath: /etc/pgbouncer/tls.crt, subPath: tls.crt }
+        - { name: {{ include "pgbouncer.tlsVolumeName" . }}, mountPath: /etc/pgbouncer/tls.key, subPath: tls.key }
+        {{- end }}
+      volumes:
+      - name: config-template
+        configMap:
+          name: {{ include "pgbouncer.fullname" . }}
+      - name: config-rendered
+        emptyDir: {}
+      {{- if .Values.tls.client.existingSecret }}
+      - name: client-tls
+        secret:
+          secretName: {{ .Values.tls.client.existingSecret }}
+          defaultMode: 0644
+      {{- end }}

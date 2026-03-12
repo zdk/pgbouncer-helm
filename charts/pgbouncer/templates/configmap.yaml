@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pgbouncer.fullname" . }}
+  labels:
+    {{- include "pgbouncer.labels" . | nindent 4 }}
+data:
+  pgbouncer.ini.tpl: |
+    [databases]
+    {{- range $name, $db := .Values.databases }}
+    {{ $name }} = host={{ $db.host }} port={{ $db.port }} dbname={{ $db.dbname }}
+    {{- end }}
+
+    [pgbouncer]
+    listen_addr = 0.0.0.0
+    listen_port = 6432
+    auth_type = {{ .Values.pgbouncer.authType }}
+    auth_file = /etc/pgbouncer/userlist.txt
+    pool_mode = {{ .Values.pgbouncer.poolMode }}
+    default_pool_size = {{ .Values.pgbouncer.defaultPoolSize }}
+    max_client_conn = {{ .Values.pgbouncer.maxClientConn }}
+    admin_users = ${DB_USER}
+    stats_users = ${DB_USER}
+    {{- if .Values.tls.client.enabled }}
+    client_tls_sslmode = {{ .Values.tls.client.sslmode }}
+    client_tls_key_file = /etc/pgbouncer/tls.key
+    client_tls_cert_file = /etc/pgbouncer/tls.crt
+    {{- end }}
+    server_tls_sslmode = {{ .Values.tls.server.sslmode }}
+  userlist.txt.tpl: |
+    "${DB_USER}" "${DB_PASSWORD}"
