@@ -1,6 +1,6 @@
 # pgbouncer-helm
 
-[PgBouncer](https://www.pgbouncer.org/) on Kubernetes. Self-signed TLS supported.
+[PgBouncer](https://www.pgbouncer.org/) on Kubernetes. Self-signed TLS supported. [Chart Repo](https://zdk.github.io/pgbouncer-helm/).
 
 ## Install
 
