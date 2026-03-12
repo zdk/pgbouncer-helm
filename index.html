@@ -7,16 +7,17 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 640px; margin: 80px auto; padding: 0 20px; color: #333; }
     h1 { margin-bottom: 8px; }
     code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-size: 0.95em; }
+    pre code { padding: 0; }
     pre { background: #f4f4f4; padding: 16px; border-radius: 8px; overflow-x: auto; }
     a { color: #0366d6; }
   </style>
 </head>
 <body>
   <h1>PgBouncer Helm Chart</h1>
-  <p>PgBouncer connection pooler for Kubernetes with optional auto-generated self-signed TLS.</p>
+  <p>PgBouncer helm chart</p>
 
   <h2>Usage</h2>
-  <pre><code>helm repo add pgbouncer https://zdk.github.io/pgbouncer-helm
+<pre><code>helm repo add pgbouncer https://zdk.github.io/pgbouncer-helm
 helm repo update
 helm install my-pgbouncer pgbouncer/pgbouncer</code></pre>
 
