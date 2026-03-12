@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  pgbouncer:
+  - apiVersion: v2
+    appVersion: 1.24.1
+    created: "2026-03-12T06:36:24.10101934Z"
+    description: PgBouncer connection pooler with auto-generated self-signed TLS
+    digest: 247f13e0c73cce3cfa3179f1b8228c2a4ca7a55eca29e922d65aa51f3b27da84
+    name: pgbouncer
+    type: application
+    urls:
+    - https://github.com/zdk/pgbouncer-helm/releases/download/pgbouncer-0.1.0/pgbouncer-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-03-12T06:36:24.101024881Z"
