@@ -31,9 +31,54 @@ tls:
 envFrom: []  # must include DB_USER and DB_PASSWORD
 
 resources:
-  requests: { cpu: 100m, memory: 128Mi }
-  limits: { cpu: 500m, memory: 256Mi }
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
 
 service:
   type: ClusterIP
   port: 6432
+  annotations: {}
+  # prometheus.io/scrape: "true"
+  # prometheus.io/port: "9127"
+
+exporter:
+  enabled: false
+  image:
+    repository: prometheuscommunity/pgbouncer-exporter
+    tag: v0.9.0
+  port: 9127
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+tolerations: []
+# - key: "dedicated"
+#   operator: "Equal"
+#   value: "pgbouncer"
+#   effect: "NoSchedule"
+
+affinity: {}
+# nodeAffinity:
+#   requiredDuringSchedulingIgnoredDuringExecution:
+#     nodeSelectorTerms:
+#     - matchExpressions:
+#       - key: kubernetes.io/arch
+#         operator: In
+#         values:
+#         - amd64
+# podAntiAffinity:
+#   preferredDuringSchedulingIgnoredDuringExecution:
+#   - weight: 100
+#     podAffinityTerm:
+#       labelSelector:
+#         matchLabels:
+#           {{- include "pgbouncer.selectorLabels" . | nindent 10 }}
+#       topologyKey: kubernetes.io/hostname

@@ -4,10 +4,20 @@ metadata:
   name: {{ include "pgbouncer.fullname" . }}
   labels:
     {{- include "pgbouncer.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - port: {{ .Values.service.port }}
+  - name: pgbouncer
+    port: {{ .Values.service.port }}
     targetPort: 6432
+  {{- if .Values.exporter.enabled }}
+  - name: metrics
+    port: {{ .Values.exporter.port }}
+    targetPort: {{ .Values.exporter.port }}
+  {{- end }}
   selector:
     {{- include "pgbouncer.selectorLabels" . | nindent 4 }}
