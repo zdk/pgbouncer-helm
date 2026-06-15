@@ -3,6 +3,19 @@ entries:
   pgbouncer:
   - apiVersion: v2
     appVersion: 1.24.1
+    created: "2026-06-15T10:35:19.558966046Z"
+    description: PgBouncer connection pooler with auto-generated self-signed TLS
+    digest: d74f98c4a4b6c4e27e990d701e2cee8131ece6e732495072138426db0ae5f645
+    maintainers:
+    - name: zdk
+      url: https://github.com/zdk
+    name: pgbouncer
+    type: application
+    urls:
+    - https://github.com/zdk/pgbouncer-helm/releases/download/pgbouncer-0.3.0/pgbouncer-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 1.24.1
     created: "2026-03-12T07:03:22.188011414Z"
     description: PgBouncer connection pooler with auto-generated self-signed TLS
     digest: 35e6a462cc1c650615846a717e825e4e2528068b0f83b3990ee89a228ec57e4a
@@ -21,4 +34,4 @@ entries:
     urls:
     - https://github.com/zdk/pgbouncer-helm/releases/download/pgbouncer-0.1.0/pgbouncer-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-12T07:03:22.188020236Z"
+generated: "2026-06-15T10:35:19.558974181Z"
